@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "This script assumes you have installed ghpb in /opt/ghpb-bin and that you run it as a service (see https://github.com/Nicemanss/hpb-tools/blob/master/hpb-install )
+echo "This script assumes you have installed ghpb in /opt/ghpb-bin and that you run it as a service (see https://github.com/Nicemanss/hpb-tools/blob/master/hpb-install )"
 read -r -p "Are you sure you want to continue? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 then
