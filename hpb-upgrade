@@ -38,7 +38,7 @@ then
         rm -rf /opt/ghpb-bin/node
         
         echo "Initializing genesis block"
-        /opt/ghpb-bin/ghpb --datadir /opt/ghpb-bin/node/data init gensis.json
+        /opt/ghpb-bin/ghpb --datadir /opt/ghpb-bin/node/data init /opt/ghpb-bin/gensis.json
         
         echo "Restoring keystore data"
         mv /opt/ghpb-bin/keystore /opt/ghpb-bin/node/data/
