@@ -54,5 +54,5 @@ then
     fi
 
 else
-    echo "Exiting".
+    echo "Exiting"
 fi
