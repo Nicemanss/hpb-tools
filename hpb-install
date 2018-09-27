@@ -1,0 +1,156 @@
+#!/bin/bash
+
+read -r -p "This script will install hpb in /opt/hpb-bin, and delete any existing installation. Are you sure you want to continue? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+then
+    # Check the latest hpb-go release
+    LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
+
+    # Check NTP version
+    NTPVERSION=`ntpdate -v |cut -d " " -f6 | cut -d "@" -f1`
+
+    # Check Kernel version
+    KERNELVERSION=`uname -r`
+
+    # Check that user is running Ubuntu 16.04
+    REQUIREDVERSION="1604"
+    RUNNINGVERSION=$( lsb_release -r | awk '{ print $2 }' | sed 's/[.]//' )
+    if [ "$RUNNINGVERSION" == "$REQUIREDVERSION" ]
+    then
+        echo -n "Enter your KEYSTORE and press [ENTER]: "
+        read KEYSTORE
+
+        echo -n "Enter your WALLET ADDRESS and press [ENTER]: "
+        read WALLET
+
+        echo -n "Enter your WALLET PASSWORD and press [ENTER]: "
+        read WALLETPASSWORD
+
+        echo -n "Enter the IP number of your NODE and press [ENTER]: "
+        read NODEIP
+
+        # Install necessary tools
+        echo "Installing required tools (build-essential, git, golang-1.9, unzip and ukuu)"
+        add-apt-repository -y ppa:teejee2008/ppa
+        apt-get update
+        apt-get install -y build-essential git golang-1.9 unzip ukuu
+        apt-get upgrade -y
+
+        if [ "$KERNELVERSION" != "4.18.10-041810-generic" ]
+        then
+            echo "Installing Kernel 4.18.10"
+            ukuu --install v4.18.10
+        fi
+
+        # Delete any existing folders and files
+        echo "Checking for existing installation"
+        if [ -d /root/hpb-temp ]
+        then
+            rm -rf /root/hpb-temp
+        fi
+
+        if [ -d /opt/ghpb-bin ]
+        then
+            rm -rf /opt/ghpb-bin
+        fi      
+
+        if [ -f /etc/systemd/system/ghpb@.service ]
+        then
+            systemctl disable ghpb@root.service
+            rm -rf /etc/systemd/system/ghpb@.service
+        fi
+
+        echo "Creating directories"
+        mkdir /root/hpb-temp
+        mkdir /opt/ghpb-bin
+
+        echo "Entering /root/hpb-temp/"
+        cd /root/hpb-temp
+
+        if [ "$NTPVERSION" != "4.2.8p12" ]
+        then
+            echo "Downloading, installing and running NTP"
+            wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.8p12.tar.gz
+            tar zxf ntp-4.2.8p12.tar.gz 
+            cd ntp-4.2.8p12/
+            ./configure && make -j8 && make install
+            echo "nameserver 8.8.8.8"  >> /etc/resolv.conf
+            ntpdate cn.pool.ntp.org
+            hwclock --systohc
+        fi
+
+        if grep -Fxq "export GOPATH=/usr/share/go-1.9" /etc/profile
+        then
+            echo "GO already configured in /etc/profile, skipping."
+        else
+            echo 'export GOPATH=/usr/share/go-1.9' >> /etc/profile
+            echo 'export GOROOT=/usr/lib/go-1.9' >> /etc/profile
+            echo 'export PATH=$GOROOT/bin:$GOPATH/bin:$PATH' >> /etc/profile
+            echo 'export GOPATH=/usr/share/go-1.9' >> /etc/bash.bashrc
+            echo 'export GOROOT=/usr/lib/go-1.9' >> /etc/bash.bashrc
+            echo 'export PATH=$GOROOT/bin:$GOPATH/bin:$PATH' >> /etc/bash.bashrc
+            source /etc/profile
+            source /etc/bash.bashrc
+        fi
+
+        # Download the latest release of HPB
+        wget https://github.com/hpb-project/go-hpb/archive/$LATESTVERSION.zip
+        unzip $LATESTVERSION.zip
+        cd go-hpb-$LATESTVERSION
+        make all
+        cp build/bin/* /opt/ghpb-bin
+
+        # Init the genesis block
+        cd /opt/ghpb-bin
+        wget https://raw.githubusercontent.com/hpb-project/hpb-release/master/config/gensis.json
+        ./ghpb --datadir node/data init gensis.json
+
+        echo "Setting up keystore"
+        mkdir /opt/ghpb-bin/node/data/keystore
+        echo $KEYSTORE > /opt/ghpb-bin/node/data/keystore/keystore
+
+        echo "Setting up wallet password"
+        echo $WALLETPASSWORD > /opt/ghpb-bin/pwd
+
+        echo "Creating ghpb service file"
+        cat <<EOF > /etc/systemd/system/ghpb@.service
+        [Unit]
+        Description=HPB
+        Requires=network.target
+
+        [Service]
+        Type=simple
+        User=%I
+        ExecStart=/opt/ghpb-bin/ghpb --datadir /opt/ghpb-bin/node/data --unlock $WALLET --password /opt/ghpb-bin/pwd --nat extip:$NODEIP --networkid 100 --verbosity 1 --rpc --rpcapi hpb,web3,admin,txpool,debug,personal,net,miner,prometheus
+        Restart=on-failure
+
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+
+        echo "Enabling ghpb service to start at boot"
+        systemctl enable ghpb@root.service
+
+        if [ "$KERNELVERSION" != "4.18.10-041810-generic" ]
+        then
+            # Show information message to user
+            echo "After reboot in 10 seconds, you can access the console by typing: /opt/ghpb-bin/ghpb attach http://127.0.0.1:8545 \n
+            In the console:\n
+            Check your peers by typing: net \n
+            Verify you are mining by typing: hpb.mining \n
+            Start mining if it's not doing so by typing miner.start()"
+            sleep 10
+
+            # Reboot machine
+            reboot
+        else
+            # Attach to ghpb console
+            /opt/ghpb-bin/ghpb attach http://127.0.0.1:8545
+        fi
+    else
+        echo "You must run Ubuntu 16.04 "
+    fi
+
+else
+    echo "Exiting".
+fi
