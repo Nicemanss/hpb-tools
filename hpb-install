@@ -1,15 +1,10 @@
 #!/bin/bash
 
-read -r -p "This script will install hpb in /opt/hpb-bin, and delete any existing installation. Are you sure you want to continue? [y/N] " response
+read -r -p "This script will install hpb in /opt/hpb-bin, and delete any existing installation. Make sure UDP/TCP 30303 and 30403 are forwarded to the server. Are you sure you want to continue? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 then
-    # Check the latest hpb-go release
     LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
-
-    # Check NTP version
     NTPVERSION=`ntpdate -v |cut -d " " -f6 | cut -d "@" -f1`
-
-    # Check Kernel version
     KERNELVERSION=`uname -r`
 
     # Check that user is running Ubuntu 16.04
@@ -42,7 +37,6 @@ then
             ukuu --install v4.18.10
         fi
 
-        # Delete any existing folders and files
         echo "Checking for existing installation"
         if [ -d /root/hpb-temp ]
         then
@@ -56,9 +50,14 @@ then
 
         if [ -f /etc/systemd/system/ghpb@.service ]
         then
+            systemctl stop ghpb@root.service
             systemctl disable ghpb@root.service
             rm -rf /etc/systemd/system/ghpb@.service
         fi
+        
+        echo "Killing any currently running ghpb"
+        killall -9 ghpb
+        killall -9 iperf3
 
         echo "Creating directories"
         mkdir /root/hpb-temp
@@ -83,6 +82,7 @@ then
         then
             echo "GO already configured in /etc/profile, skipping."
         else
+            echo "Setting up GO Paths"
             echo 'export GOPATH=/usr/share/go-1.9' >> /etc/profile
             echo 'export GOROOT=/usr/lib/go-1.9' >> /etc/profile
             echo 'export PATH=$GOROOT/bin:$GOPATH/bin:$PATH' >> /etc/profile
@@ -93,14 +93,16 @@ then
             source /etc/bash.bashrc
         fi
 
-        # Download the latest release of HPB
+        echo "Downloading HPB $LATESTVERSION"
         wget https://github.com/hpb-project/go-hpb/archive/$LATESTVERSION.zip
         unzip $LATESTVERSION.zip
         cd go-hpb-$LATESTVERSION
+        
+        echo "Building release  $LATESTVERSION"
         make all
         cp build/bin/* /opt/ghpb-bin
 
-        # Init the genesis block
+        echo "Init the genesis block"
         cd /opt/ghpb-bin
         wget https://raw.githubusercontent.com/hpb-project/hpb-release/master/config/gensis.json
         ./ghpb --datadir node/data init gensis.json
@@ -147,8 +149,7 @@ then
             # Reboot machine
             reboot
         else
-            # Attach to ghpb console
-            /opt/ghpb-bin/ghpb attach http://127.0.0.1:8545
+            echo "Type the following to attach to the ghpb console: /opt/ghpb-bin/ghpb attach http://127.0.0.1:8545"
         fi
     else
         echo "You must run Ubuntu 16.04 "
