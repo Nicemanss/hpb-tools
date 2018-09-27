@@ -4,7 +4,7 @@ echo "This script assumes you have installed ghpb in /opt/ghpb-bin and that you 
 read -r -p "Are you sure you want to continue? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 then
-    if [ -d /opt/ghpb-bin && -f /etc/systemd/system/ghpb@.service ]
+    if [ -d /opt/ghpb-bin ] && [ -f /etc/systemd/system/ghpb@.service ]
     then
         # Check the latest hpb-go release
         LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
