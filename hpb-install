@@ -130,6 +130,9 @@ then
 
         echo "Enabling ghpb service to start at boot"
         systemctl enable ghpb@root.service
+        
+        echo "Clearing temp directories"
+        rm -rf /root/hpb-temp
 
         if [ "$KERNELVERSION" != "4.18.10-041810-generic" ]
         then
