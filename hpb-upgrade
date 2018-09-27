@@ -38,7 +38,9 @@ then
         rm -rf /opt/ghpb-bin/node
         
         echo "Initializing genesis block"
-        /opt/ghpb-bin/ghpb --datadir /opt/ghpb-bin/node/data init /opt/ghpb-bin/gensis.json
+        cd /opt/ghpb-bin/
+        wget https://raw.githubusercontent.com/hpb-project/hpb-release/master/config/gensis.json
+        ./ghpb --datadir node/data init gensis.json
         
         echo "Restoring keystore data"
         mv /opt/ghpb-bin/keystore /opt/ghpb-bin/node/data/
