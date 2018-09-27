@@ -1,7 +1,7 @@
 # hpb-tools
 Tools to make hpb-life easier
 
-Setting up
+# Setting up
 
 sudo su -
 
@@ -16,11 +16,11 @@ chmod +x hpb-install
 chmod +x hpb-upgrade
 
 
-Installing:
+# Installing
 
 ./hpb-install
 
 
-Upgrading to the latest release:
+# Upgrading to the latest release
 
 ./hpb-upgrade
