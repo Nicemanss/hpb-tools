@@ -152,7 +152,7 @@ Requires=network.target
 [Service]
 Type=simple
 User=%I
-ExecStart=/opt/ghpb-bin/ghpb --datadir /opt/ghpb-bin/node/data --unlock $WALLET --password /opt/ghpb-bin/pwd --nat extip:$NODEIP --networkid 100 --verbosity 1 --rpc --rpcapi hpb,web3,admin,txpool,debug,personal,net,miner,prometheus
+ExecStart=/opt/ghpb-bin/ghpb --datadir /opt/ghpb-bin/node/data --unlock $WALLET --password /opt/ghpb-bin/pwd --nat extip:$NODEIP --networkid 100 --verbosity 3 --rpc --rpcapi hpb,web3,admin,txpool,debug,personal,net,miner,prometheus
 Restart=on-failure
 
 [Install]
