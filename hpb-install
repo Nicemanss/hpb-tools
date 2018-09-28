@@ -5,7 +5,7 @@ then
     read -r -p "This script will install hpb in /opt/hpb-bin, and delete any existing installation. Make sure UDP/TCP 30303 and 30403 are forwarded to the server. Are you sure you want to continue? [y/N] " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
     then
-        LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
+        # LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
         NTPVERSION=`ntpdate -v |cut -d " " -f6 | cut -d "@" -f1`
         KERNELVERSION=`uname -r`
 
@@ -118,12 +118,16 @@ then
                 source /etc/bash.bashrc
             fi
 
-            echo "Downloading HPB $LATESTVERSION"
-            wget https://github.com/hpb-project/go-hpb/archive/$LATESTVERSION.zip
-            unzip $LATESTVERSION.zip
-            cd go-hpb-$LATESTVERSION
+            # echo "Downloading HPB $LATESTVERSION"
+            # wget https://github.com/hpb-project/go-hpb/archive/$LATESTVERSION.zip
+            # unzip $LATESTVERSION.zip
+            # cd go-hpb-$LATESTVERSION
+            
+            echo "Downloading HPB source code"
+            git clone https://github.com/hpb-project/go-hpb
+            cd go-hpb
 
-            echo "Building release  $LATESTVERSION"
+            echo "Building release"
             make all
             cp build/bin/* /opt/ghpb-bin
 
