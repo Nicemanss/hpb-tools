@@ -11,16 +11,12 @@ git clone https://github.com/Nicemanss/hpb-tools
 
 cd hpb-tools
 
-chmod +x hpb-install
-
-chmod +x hpb-upgrade
-
 
 # Installing
 
-./hpb-install
+bash hpb-install
 
 
 # Upgrading to the latest release
 
-./hpb-upgrade
+bash hpb-upgrade
