@@ -38,7 +38,7 @@ then
             cp build/bin/* /opt/ghpb-bin
 
             echo "Backing up keystore data"
-            mv /opt/ghpb-bin/node/data/keystore /opt/ghpb-bin
+            mv /opt/ghpb-bin/node/data/keystore /opt/ghpb-bin/
 
             echo "Clearing node data"
             rm -rf /opt/ghpb-bin/node
