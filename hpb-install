@@ -16,15 +16,31 @@ then
         then
             echo -n "Enter your KEYSTORE and press [ENTER]: "
             read KEYSTORE
+            if [[ -z "$KEYSTORE" ]]; then
+               printf '%s\n' "No input for Keystore entered"
+               exit 1
+            fi
 
             echo -n "Enter your WALLET ADDRESS and press [ENTER]: "
             read WALLET
+            if [[ -z "$WALLET" ]]; then
+               printf '%s\n' "No input for Wallet Address entered"
+               exit 1
+            fi
 
             echo -n "Enter your WALLET PASSWORD and press [ENTER]: "
             read WALLETPASSWORD
+            if [[ -z "$WALLETPASSWORD" ]]; then
+               printf '%s\n' "No input for Wallet Password entered"
+               exit 1
+            fi
 
             echo -n "Enter the IP number of your NODE and press [ENTER]: "
             read NODEIP
+            if [[ -z "$NODEIP" ]]; then
+               printf '%s\n' "No input for Node IP entered"
+               exit 1
+            fi
 
             # Install necessary tools
             echo "Installing required tools (build-essential, git, golang-1.9, unzip and ukuu)"
