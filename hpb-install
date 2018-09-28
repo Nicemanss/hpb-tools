@@ -177,6 +177,9 @@ EOF
                 # Reboot machine
                 reboot
             else
+                echo "Starting GHPB"
+                systemctl start ghpb@root.service
+                sleep 3
                 echo "Type the following to attach to the ghpb console: /opt/ghpb-bin/ghpb attach http://127.0.0.1:8545"
             fi
         else
