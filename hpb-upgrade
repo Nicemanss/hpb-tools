@@ -9,7 +9,7 @@ then
         if [ -d /opt/ghpb-bin ] && [ -f /etc/systemd/system/ghpb@.service ]
         then
             # Check the latest hpb-go release
-            LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
+            #LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
             echo "Stopping ghpb service"
             systemctl stop ghpb@root.service
 
@@ -22,12 +22,16 @@ then
             mkdir /root/hpb-temp
             cd /root/hpb-temp
 
-            echo "Downloading the latest release of HPB"
-            wget https://github.com/hpb-project/go-hpb/archive/$LATESTVERSION.zip
-            unzip $LATESTVERSION.zip
-            cd go-hpb-$LATESTVERSION
+            #echo "Downloading the latest release of HPB"
+            #wget https://github.com/hpb-project/go-hpb/archive/$LATESTVERSION.zip
+            #unzip $LATESTVERSION.zip
+            #cd go-hpb-$LATESTVERSION
 
-            echo "Building release $LATESTVERSION"
+            echo "Downloading HPB source code"
+            git clone https://github.com/hpb-project/go-hpb
+            cd go-hpb
+
+            echo "Building release"
             make all
 
             echo "Copying binaries"
@@ -41,7 +45,7 @@ then
 
             echo "Initializing genesis block"
             cd /opt/ghpb-bin/
-            wget https://raw.githubusercontent.com/hpb-project/hpb-release/master/config/gensis.json
+            wget -q https://raw.githubusercontent.com/hpb-project/hpb-release/master/config/gensis.json -O /opt/ghpb-bin/gensis.json
             ./ghpb --datadir node/data init gensis.json
 
             echo "Restoring keystore data"
