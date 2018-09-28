@@ -12,6 +12,8 @@ then
             #LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
             echo "Stopping ghpb service"
             systemctl stop ghpb@root.service
+            killall -9 ghpb
+            killall -9 iperf3
 
             echo "Setting up temp directories"
             if [ -d /root/hpb-temp ]
