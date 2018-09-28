@@ -14,9 +14,13 @@ cd hpb-tools
 
 # Installing
 
-bash hpb-install
+bash ./hpb-install
 
 
 # Upgrading to the latest release
 
-bash hpb-upgrade
+bash ./hpb-upgrade
+
+
+# View logs
+journalctl -u ghpb@root.service
