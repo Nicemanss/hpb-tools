@@ -88,12 +88,19 @@ then
             then
                 echo "Downloading, installing and running NTP"
                 wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.8p12.tar.gz
-                tar zxf ntp-4.2.8p12.tar.gz 
-                cd ntp-4.2.8p12/
-                ./configure && make -j8 && make install
-                echo "nameserver 8.8.8.8"  >> /etc/resolv.conf
-                ntpdate cn.pool.ntp.org
-                hwclock --systohc
+                
+                if [ `md5sum ntp-4.2.8p12.tar.gz | cut -d " " -f1` == "1522d66574bae14abb2622746dad2bdc" ]
+                then
+                    tar zxf ntp-4.2.8p12.tar.gz 
+                    cd ntp-4.2.8p12/
+                    ./configure && make -j8 && make install
+                    echo "nameserver 8.8.8.8"  >> /etc/resolv.conf
+                    ntpdate cn.pool.ntp.org
+                    hwclock --systohc
+                else
+                    echo "MD5 Sums for NTP does not match! Exiting installer to avoid potential security breach."
+                    exit 1
+                fi
             fi
 
             if grep -Fxq "export GOPATH=/usr/share/go-1.9" /etc/profile
