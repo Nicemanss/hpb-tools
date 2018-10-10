@@ -21,6 +21,14 @@ bash ./hpb-install
 
 bash ./hpb-upgrade
 
+# Start / Stop / Restart the service
+systemctl start ghpb@root.service
+systemctl stop ghpb@root.service
+systemctl restart ghpb@root.service
+
+# Attach to the HPB console
+/opt/ghpb-bin/ghpb attach http://127.0.0.1:8545
+
 
 # View logs
 journalctl -u ghpb@root.service
