@@ -39,19 +39,19 @@ then
             echo "Copying binaries"
             cp build/bin/* /opt/ghpb-bin
 
-            echo "Backing up keystore data"
-            mv /opt/ghpb-bin/node/data/keystore /opt/ghpb-bin/
+            #echo "Backing up keystore data"
+            #mv /opt/ghpb-bin/node/data/keystore /opt/ghpb-bin/
 
-            echo "Clearing node data"
-            rm -rf /opt/ghpb-bin/node
+            #echo "Clearing node data"
+            #rm -rf /opt/ghpb-bin/node
 
-            echo "Initializing genesis block"
-            cd /opt/ghpb-bin/
-            wget -q https://raw.githubusercontent.com/hpb-project/hpb-release/master/config/gensis.json -O /opt/ghpb-bin/gensis.json
-            ./ghpb --datadir node/data init gensis.json
+            #echo "Initializing genesis block"
+            #cd /opt/ghpb-bin/
+            #wget -q https://raw.githubusercontent.com/hpb-project/hpb-release/master/config/gensis.json -O /opt/ghpb-bin/gensis.json
+            #./ghpb --datadir node/data init gensis.json
 
-            echo "Restoring keystore data"
-            mv /opt/ghpb-bin/keystore /opt/ghpb-bin/node/data/
+            #echo "Restoring keystore data"
+            #mv /opt/ghpb-bin/keystore /opt/ghpb-bin/node/data/
 
             echo "Starting ghpb service"
             systemctl start ghpb@root.service
