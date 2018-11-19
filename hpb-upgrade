@@ -3,6 +3,7 @@
 if [[ $EUID -eq 0 ]]
 then
     echo "This script assumes you have installed ghpb in /opt/ghpb-bin and that you run it as a service (see https://github.com/Nicemanss/hpb-tools/blob/master/hpb-install )"
+    echo "To install a specific version, add the version at the end. Example: bash ./hpb-upgrade 1.0.2.3
     read -r -p "Are you sure you want to continue? [y/N] " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
     then
@@ -32,6 +33,13 @@ then
             echo "Downloading HPB source code"
             git clone https://github.com/hpb-project/go-hpb
             cd go-hpb
+            
+            if [ -n "$1" ]; then
+                echo "Building version $1"
+                git checkout -b $1
+            else
+              echo "Building with latest commit."
+            fi
 
             echo "Building release"
             make all
