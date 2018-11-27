@@ -16,8 +16,11 @@ cd hpb-tools
 
 bash ./hpb-install
 
+# Upgrading to a specific version (1.0.2.3 in this case)
 
-# Upgrading to the latest release
+bash ./hpb-upgrade 1.0.2.3
+
+# Upgrading to the latest commit
 
 bash ./hpb-upgrade
 
