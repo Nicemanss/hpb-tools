@@ -9,8 +9,6 @@ then
     then
         if [ -d /opt/ghpb-bin ] && [ -f /etc/systemd/system/ghpb@.service ]
         then
-            # Check the latest hpb-go release
-            #LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
             echo "Stopping ghpb service"
             systemctl stop ghpb@root.service
             killall -9 ghpb
@@ -25,27 +23,24 @@ then
             mkdir /root/hpb-temp
             cd /root/hpb-temp
 
-            echo "Downloading the latest release of HPB"
-            wget https://github.com/hpb-project/go-hpb/archive/$LATESTVERSION.zip
-            unzip $LATESTVERSION.zip
-            cd go-hpb-$LATESTVERSION
-
-            echo "Downloading HPB source code"
-            git clone https://github.com/hpb-project/go-hpb
-            cd go-hpb
-            
             if [ -n "$1" ]; then
-                echo "Building version $1"
-                git checkout -b $1
+                echo "Downloading version $1"
+                wget https://github.com/hpb-project/hpb-release/raw/master/bin/ghpb-v$1.tar.gz
+		tar xvzf ghpb-v$1.tar.gz
+		cp ghpb-v$1/* /opt/ghpb-bin/
             else
-              echo "Building with latest commit."
-            fi
+              	echo "Building with latest commit."
 
-            echo "Building release"
-            make all
+            	echo "Downloading HPB source code"
+            	git clone https://github.com/hpb-project/go-hpb
+            	cd go-hpb
 
-            echo "Copying binaries"
-            cp build/bin/* /opt/ghpb-bin
+            	echo "Building release"
+            	make all
+
+            	echo "Copying binaries"
+            	cp build/bin/* /opt/ghpb-bin/
+	    fi
 
             echo "Backing up keystore data"
             mv /opt/ghpb-bin/node/data/keystore /opt/ghpb-bin/
