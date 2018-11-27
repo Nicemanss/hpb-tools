@@ -1,7 +1,19 @@
 #!/bin/bash
+UPSTREAM=${1:-'@{u}'}
+LOCAL=$(git rev-parse @)
+REMOTE=$(git rev-parse "$UPSTREAM")
+BASE=$(git merge-base @ "$UPSTREAM")
 
 if [[ $EUID -eq 0 ]]
 then
+    if [ $LOCAL = $BASE ];
+    then
+        read -r -p "There is a new version of hpb-tools available, update to it? [Y/n] " response
+        if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+            git pull
+	fi
+    fi
+
     echo "This script assumes you have installed ghpb in /opt/ghpb-bin and that you run it as a service (see https://github.com/Nicemanss/hpb-tools/blob/master/hpb-install )"
     echo "To install a specific version, add the version at the end. Example: bash ./hpb-upgrade 1.0.2.3"
     read -r -p "Are you sure you want to continue? [y/N] " response
