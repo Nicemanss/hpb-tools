@@ -9,7 +9,7 @@ then
     if [ $LOCAL = $BASE ];
     then
         read -r -p "There is a new version of hpb-tools available, update to it? [Y/n] " response
-        if[[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+        if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 	then
             git pull
 	fi
