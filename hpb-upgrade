@@ -6,8 +6,9 @@ BASE=$(git merge-base @ "$UPSTREAM")
 
 if [[ $EUID -eq 0 ]]
 then
-    if [ $LOCAL = $BASE ];
-    then
+    if [ $LOCAL = $REMOTE ]; then
+	    echo "HPB Tools Up-to-date!"
+    elif [ $LOCAL = $BASE ]; then
         read -r -p "There is a new version of hpb-tools available, update to it? [Y/n] " response
         if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 	then
