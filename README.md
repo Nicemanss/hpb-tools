@@ -16,6 +16,9 @@ cd hpb-tools
 
 bash ./hpb-install
 
+# Upgrading hpb-tools
+HPB tools will check for new updates to the tool when you run the script, and ask if you want to upgrade
+
 # Upgrading to a specific version (1.0.2.3 in this case)
 
 bash ./hpb-upgrade 1.0.2.3
