@@ -35,13 +35,6 @@ then
                exit 1
             fi
 
-            echo -n "Enter the IP number of your NODE and press [ENTER]: "
-            read NODEIP
-            if [[ -z "$NODEIP" ]]; then
-               printf '%s\n' "No input for Node IP entered"
-               exit 1
-            fi
-
             # Install necessary tools
             echo "Installing required tools (build-essential, git, golang-1.9, unzip and ukuu)"
             add-apt-repository -y ppa:teejee2008/ppa
@@ -152,7 +145,7 @@ Requires=network.target
 [Service]
 Type=simple
 User=%I
-ExecStart=/opt/ghpb-bin/ghpb --datadir /opt/ghpb-bin/node/data --unlock $WALLET --password /opt/ghpb-bin/pwd --nat extip:$NODEIP --networkid 100 --verbosity 3 --rpc --rpcapi hpb,web3,admin,txpool,debug,personal,net,miner,prometheus
+ExecStart=/opt/ghpb-bin/ghpb --datadir /opt/ghpb-bin/node/data  --networkid 100 --port 3004 --unlock $WALLET --password /opt/ghpb-bin/pwd --verbosity 3 --rpc --rpcport 8545 --rpcapi hpb,web3,admin,txpool,debug,personal,net,miner,prometheus --mine
 Restart=on-failure
 
 [Install]
