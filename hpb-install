@@ -6,14 +6,13 @@ then
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
     then
         # LATESTVERSION=`curl -s https://api.github.com/repos/hpb-project/go-hpb/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")'`
-        NTPVERSION=`ntpdate -v |cut -d " " -f6 | cut -d "@" -f1`
         KERNELVERSION=`uname -r`
 
         # Check that user is running Ubuntu 16.04
         REQUIREDVERSION="1604"
         RUNNINGVERSION=$( lsb_release -r | awk '{ print $2 }' | sed 's/[.]//' )
         if [ "$RUNNINGVERSION" == "$REQUIREDVERSION" ]
-        then
+        then            
             echo -n "Enter your KEYSTORE and press [ENTER]: "
             read KEYSTORE
             if [[ -z "$KEYSTORE" ]]; then
@@ -76,7 +75,7 @@ then
 
             echo "Entering /root/hpb-temp/"
             cd /root/hpb-temp
-
+            NTPVERSION=`ntpdate -v |cut -d " " -f6 | cut -d "@" -f1`
             if [ "$NTPVERSION" != "4.2.8p12" ]
             then
                 echo "Downloading, installing and running NTP"
